@@ -56,4 +56,21 @@ io.on("connection", (socket) => {
     //send out to all connected sockets Except the one that sent the offer
     socket.broadcast.emit("newOfferAwaiting", offers.slice(-1));
   });
+
+  socket.on("sendIceCandidateToSignalingServer", (iceCandidateObject) => {
+    const { iceCandidate, iceUserName, didIOffer } = iceCandidateObject;
+    if (didIOffer) {
+      const offerInOffers = offers.find(
+        (offer) => offer.offererUserName === iceUserName
+      );
+      if (offerInOffers) {
+        offerInOffers.offerIceCandidates.push(iceCandidate);
+        // come back to this ...
+        // if the answerer is already here, emit the ice candidate to them
+      }
+    }
+    // Else I am the answerer, so I will wait for the offer to come in
+    else {
+    }
+  });
 });

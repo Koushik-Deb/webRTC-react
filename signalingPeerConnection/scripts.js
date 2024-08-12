@@ -15,6 +15,7 @@ const remoteVideoEl = document.querySelector("#remote-video");
 let localStream; // This will hold the local stream object
 let remoteStream; // This will hold the remote stream object
 let peerConnection; // This will hold the peer connection that the two clients use to talk
+let didIOffer = false; // This will be used to determine if the client is the one who initiated the call
 
 let peerConfiguration = {
   iceServers: [
@@ -39,7 +40,7 @@ const call = async (e) => {
     const offer = await peerConnection.createOffer();
     console.log("offer done ", offer);
     await peerConnection.setLocalDescription(offer);
-
+    didIOffer = true;
     // send the offer to the signaling server
     socket.emit("newOffer", offer);
   } catch (err) {
@@ -50,6 +51,13 @@ const call = async (e) => {
 const handleICECandidateEvent = (e) => {
   console.log(".......ICE candidate found!...........");
   console.log(e);
+  if (e.candidate) {
+    socket.emit("sendIceCandidateToSignalingServer", {
+      iceCandidate: e.candidate,
+      iceUserName: userName,
+      didIOffer,
+    });
+  }
 };
 
 const createPeerConnection = () => {
