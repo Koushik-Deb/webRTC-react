@@ -5,7 +5,7 @@
     4. add local stream tracks to RTCPeerConnection for client1 - addTrack(track, stream)
     5. add event listener for ICE candidates - 'icecandidate'
 6. client1 create offer - createOffer() - OFFER returns 1. SDP, 2. Type(OFFER)
-    7. set local description for client1 - setLocalDescription()
+    7. set local description for client1 - setLocalDescription(offer)
 ~8. After adding setLocalDescription, client1 will get ICE candidates - 'icecandidate' event - (ASYNC)
 
 
@@ -17,5 +17,33 @@ SIGNALING SERVER
     12. signaling server receives ICE c. from client1 and holds it for the other client
 
 
-CLIENT1 and SIGNALING SERVER WAITS
+CLIENT1 and SIGNALING SERVER WAITS for an answerer/CLIENT2/receiver
 
+13. CLIENT2 loads up the webpage with io.connect()
+    - CLIENT2 is connected to the signaling server
+14. SOCKET.IO/SIGNALING SERVER sends/emits RTC SESSION DESCRIPTION to CLIENT2
+    - an offer to be sent
+15. CLIENT2 runs getUserMedia()
+16. CLIENT2 creates RTCPeerConnection with ICE servers configuration(STUN and/or TURN servers)
+    17. RTCPeerConnection needs STUN and/or TURN servers
+        - to get the ICE candidates later
+    18. add local stream tracks to RTCPeerConnection for client2 - addTrack(track, stream)
+    19. add event listener for ICE candidates - 'icecandidate'
+20. CLIENT2 creates an answer - createAnswer() - ANSWER returns 1. SDP, 2. Type(ANSWER)
+    21. set local description for client2 - setLocalDescription(answer)
+~22. After adding setLocalDescription, client2 will get ICE candidates - 'icecandidate' event - (ASYNC)
+23. CLIENT2 has the offer, CLIENT2 can set remote description - setRemoteDescription(offer)
+
+
+SIGNALING SERVER has been waiting...
+24. CLIENT2 sends/emits answer to signaling server
+~25. CLIENT2 will listen for tracks/ICE from remote. and it is done.
+    - Waiting on ICE candidates
+    - waiting on tracks
+26. signaling server receives answer from client2 and sends it to CLIENT1
+27. CLIENT1 receives answer from signaling server and sets remote description - setRemoteDescription(answer)
+~28. CLIENT1 is done and can listen for tracks/ICE from remote.
+    - Waiting on ICE candidates
+    - waiting on tracks
+
+25 and 28 are waiting for ICE. Once ICE is exchanged, tracks will be exchanged.
