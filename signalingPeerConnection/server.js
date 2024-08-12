@@ -43,6 +43,11 @@ io.on("connection", (socket) => {
     socketId: socket.id,
   });
 
+  // a new client has joined. If there are any offers, send them the offers
+  if (offers.length > 0) {
+    socket.emit("availableOffers", offers);
+  }
+
   socket.on("newOffer", (newOffer) => {
     console.log("new offer received ");
     offers.push({

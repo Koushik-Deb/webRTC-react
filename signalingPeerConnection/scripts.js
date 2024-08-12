@@ -60,6 +60,10 @@ const handleICECandidateEvent = (e) => {
   }
 };
 
+const answerOffer = (offerObj) => {
+  console.log("Answering offer ", offerObj);
+};
+
 const createPeerConnection = () => {
   return new Promise(async (resolve, reject) => {
     //RTCPeerConnection is a WebRTC API that sets up a peer connection between the local client and a remote peer
