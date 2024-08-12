@@ -1,6 +1,7 @@
 let mediaRecorder;
 let recordedBlobs;
 const startRecording = async () => {
+  //change stream to mediaStream in this function to record screen sharing as well
   if (!stream) return console.log("No stream to record");
   recordedBlobs = [];
   mediaRecorder = new MediaRecorder(stream);

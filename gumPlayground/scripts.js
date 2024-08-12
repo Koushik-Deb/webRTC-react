@@ -1,5 +1,6 @@
 const videoEl = document.querySelector("#my-video");
 let stream = null; // init stream var so we can use it anywhere
+let mediaStream = null;
 const constraints = {
   audio: true,
   video: true,
