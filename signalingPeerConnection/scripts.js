@@ -1,4 +1,13 @@
-const socket = io("https://localhost:8181"); // connect to the signaling server
+const userName = "Koushik-" + Math.floor(Math.random() * 1000);
+const password = "X";
+document.querySelector("#user-name").innerHTML = userName;
+
+const socket = io("https://localhost:8181", {
+  auth: {
+    userName,
+    password,
+  },
+}); // connect to the signaling server
 // we can use wss instead of https to connect to the signaling server
 const localVideoEl = document.querySelector("#local-video");
 const remoteVideoEl = document.querySelector("#remote-video");
@@ -30,6 +39,9 @@ const call = async (e) => {
     const offer = await peerConnection.createOffer();
     console.log("offer done ", offer);
     await peerConnection.setLocalDescription(offer);
+
+    // send the offer to the signaling server
+    socket.emit("newOffer", offer);
   } catch (err) {
     console.error(err);
   }
