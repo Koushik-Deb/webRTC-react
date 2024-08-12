@@ -1,3 +1,5 @@
+const socket = io("https://localhost:8181"); // connect to the signaling server
+// we can use wss instead of https to connect to the signaling server
 const localVideoEl = document.querySelector("#local-video");
 const remoteVideoEl = document.querySelector("#remote-video");
 
