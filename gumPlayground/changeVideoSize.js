@@ -7,6 +7,7 @@ const changeVideoSize = () => {
     //we can get it's capabilities from .getCapabilities()
     //or we can apply new constraints with applyConstraints();'
     const capabilities = track.getCapabilities();
+    console.log("Capabilities:", capabilities);
     const height = document.querySelector("#vid-height").value;
     const width = document.querySelector("#vid-width").value;
     const vConstraints = {
@@ -28,3 +29,7 @@ const changeVideoSize = () => {
   //     console.log(capabilities);
   // })
 };
+
+document
+  .querySelector("#change-size")
+  .addEventListener("click", (e) => changeVideoSize(e));
