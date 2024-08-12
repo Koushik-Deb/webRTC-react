@@ -1,0 +1,21 @@
+1. Get user media for client1 - getUserMedia()
+2. client1 create RTCPeerConnection with ICE servers configuration(STUN and/or TURN servers)
+    3. RTCPeerConnection needs STUN and/or TURN servers
+        - to get the ICE candidates later
+    4. add local stream tracks to RTCPeerConnection for client1 - addTrack(track, stream)
+    5. add event listener for ICE candidates - 'icecandidate'
+6. client1 create offer - createOffer() - OFFER returns 1. SDP, 2. Type(OFFER)
+    7. set local description for client1 - setLocalDescription()
+~8. After adding setLocalDescription, client1 will get ICE candidates - 'icecandidate' event - (ASYNC)
+
+
+SIGNALING SERVER
+
+9. client1 sends/emits offer to signaling server
+    10. signaling server receives offer from client1 and holds it for the other client
+~11. Once 8 happens, send/emit ICE c. up to the signaling server
+    12. signaling server receives ICE c. from client1 and holds it for the other client
+
+
+CLIENT1 and SIGNALING SERVER WAITS
+
