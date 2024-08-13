@@ -12,6 +12,11 @@ socket.on("answerResponse", (offerObj) => {
   addAnswer(offerObj);
 });
 
+socket.on("receivedIceCandidateFromServer", (iceCandidate) => {
+  console.log("received ice candidate from signaling server ", iceCandidate);
+  addNewIceCandidate(iceCandidate);
+});
+
 function createOfferEls(offers) {
   const answerEl = document.querySelector("#answer");
   offers.forEach((o) => {

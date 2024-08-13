@@ -80,13 +80,22 @@ const answerOffer = async (offerObj) => {
   console.log("Answer ", answer);
 
   // emit the answer to the signaling server
+  //expect a response from the server with the already existing ICE candidates
   offerObj.answer = answer;
-  socket.emit("newAnswer", offerObj);
+  const offerIceCandidates = await socket.emitWithAck("newAnswer", offerObj);
+  offerIceCandidates.forEach((iceCandidate) => {
+    peerConnection.addIceCandidate(iceCandidate);
+  });
 };
 
 const addAnswer = async (offerObj) => {
   console.log("Adding answer ", offerObj);
   await peerConnection.setRemoteDescription(offerObj.answer);
+};
+
+const addNewIceCandidate = (iceCandidate) => {
+  console.log("Adding new ICE candidate ", iceCandidate);
+  peerConnection.addIceCandidate(iceCandidate);
 };
 
 const createPeerConnection = () => {

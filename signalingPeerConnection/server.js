@@ -62,7 +62,7 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("newOfferAwaiting", offers.slice(-1));
   });
 
-  socket.on("newAnswer", (offerObj) => {
+  socket.on("newAnswer", (offerObj, ackFunction) => {
     console.log("new answer received ");
     //emit this answer (offerObj) back to the offerer
     const socketToAnswer = connectedSockets.find(
@@ -83,6 +83,8 @@ io.on("connection", (socket) => {
       console.log("No matching offer");
       return;
     }
+    //send back to the answerer all the ice candidates that the offerer has sent
+    ackFunction(offerToUpdate.offerIceCandidates);
     offerToUpdate.answer = offerObj.answer;
     offerToUpdate.answererUserName = userName;
 
@@ -98,12 +100,34 @@ io.on("connection", (socket) => {
       );
       if (offerInOffers) {
         offerInOffers.offerIceCandidates.push(iceCandidate);
-        // come back to this ...
-        // if the answerer is already here, emit the ice candidate to them
+        // 1. When the answerer answers, all existing ICE candidates are sent
+        // 2. Any candidate that comes in after the answer is sent is sent automatically
+        if (offerInOffers.answererUserName) {
+          //pass it through to the answerer
+          const socketToSendTo = connectedSockets.find(
+            (socket) => socket.userName === offerInOffers.answererUserName
+          );
+          if (socketToSendTo) {
+            socket
+              .to(socketToSendTo.socketId)
+              .emit("receivedIceCandidateFromServer", iceCandidate);
+          }
+        }
       }
     }
-    // Else I am the answerer, so I will wait for the offer to come in
+    // Else I am the answerer, so I will send it to the offerer
     else {
+      const offerInOffers = offers.find(
+        (offer) => offer.answererUserName === iceUserName
+      );
+      const socketToSendTo = connectedSockets.find(
+        (socket) => socket.userName === offerInOffers.offererUserName
+      );
+      if (socketToSendTo) {
+        socket
+          .to(socketToSendTo.socketId)
+          .emit("receivedIceCandidateFromServer", iceCandidate);
+      }
     }
   });
 });
