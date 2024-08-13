@@ -25,11 +25,15 @@ let peerConfiguration = {
   ],
 };
 
-// when a client initiates a call, this function is called
-const call = async (e) => {
+const fetchUserMedia = async () => {
   const stream = await navigator.mediaDevices.getUserMedia({ video: true });
   localVideoEl.srcObject = stream;
   localStream = stream;
+};
+
+// when a client initiates a call, this function is called
+const call = async (e) => {
+  await fetchUserMedia();
 
   // peerConnection is all set with our STUN servers sent over
   await createPeerConnection();
@@ -60,8 +64,14 @@ const handleICECandidateEvent = (e) => {
   }
 };
 
-const answerOffer = (offerObj) => {
+const answerOffer = async (offerObj) => {
+  await fetchUserMedia();
+  await createPeerConnection();
+  peerConnection.setRemoteDescription(offerObj.offer);
+  const answer = await peerConnection.createAnswer();
+  peerConnection.setLocalDescription(answer);
   console.log("Answering offer ", offerObj);
+  console.log("Answer ", answer);
 };
 
 const createPeerConnection = () => {
@@ -79,7 +89,7 @@ const createPeerConnection = () => {
     peerConnection.addEventListener("icecandidate", (e) =>
       handleICECandidateEvent(e)
     );
-    resolve();
+    resolve(peerConnection);
   });
 };
 
