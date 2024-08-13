@@ -62,6 +62,19 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("newOfferAwaiting", offers.slice(-1));
   });
 
+  socket.on("newAnswer", (offerObj) => {
+    console.log("new answer received ");
+    //emit this answer (offerObj) back to the offerer
+    const socketToAnswer = connectedSockets.find(
+      (socket) => socket.userName === offerObj.offererUserName
+    );
+    if (!socketToAnswer) {
+      return;
+    }
+    //we found the matching socket, so we can emit to it
+    const socketIdToAnswer = socketToAnswer.socketId;
+  });
+
   socket.on("sendIceCandidateToSignalingServer", (iceCandidateObject) => {
     const { iceCandidate, iceUserName, didIOffer } = iceCandidateObject;
     if (didIOffer) {

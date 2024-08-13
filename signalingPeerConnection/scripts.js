@@ -78,6 +78,10 @@ const answerOffer = async (offerObj) => {
   peerConnection.setLocalDescription(answer);
   console.log("Answering offer ", offerObj);
   console.log("Answer ", answer);
+
+  // emit the answer to the signaling server
+  offerObj.answer = answer;
+  socket.emit("newAnswer", offerObj);
 };
 
 const createPeerConnection = () => {
