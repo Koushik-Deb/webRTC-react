@@ -104,6 +104,8 @@ const createPeerConnection = () => {
     //We can pass a config object to the RTCPeerConnection constructor to specify the ICE servers to use
     //ICE servers will fetch us ICE candidates that we can use to establish a connection with the remote peer
     peerConnection = await new RTCPeerConnection(peerConfiguration);
+    remoteStream = new MediaStream();
+    remoteVideoEl.srcObject = remoteStream;
 
     // need to add local streams to the peer connection so that the remote peer can see us
     localStream.getTracks().forEach((track) => {
@@ -121,6 +123,13 @@ const createPeerConnection = () => {
     peerConnection.addEventListener("icecandidate", (e) =>
       handleICECandidateEvent(e)
     );
+
+    peerConnection.addEventListener("track", (e) => {
+      console.log("Track event ", e);
+      e.streams[0].getTracks().forEach((track) => {
+        remoteStream.addTrack(track, remoteStream);
+      });
+    });
     resolve(peerConnection);
   });
 };
