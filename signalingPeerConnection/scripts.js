@@ -84,6 +84,11 @@ const answerOffer = async (offerObj) => {
   socket.emit("newAnswer", offerObj);
 };
 
+const addAnswer = async (offerObj) => {
+  console.log("Adding answer ", offerObj);
+  await peerConnection.setRemoteDescription(offerObj.answer);
+};
+
 const createPeerConnection = () => {
   return new Promise(async (resolve, reject) => {
     //RTCPeerConnection is a WebRTC API that sets up a peer connection between the local client and a remote peer

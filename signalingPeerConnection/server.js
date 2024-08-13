@@ -69,10 +69,25 @@ io.on("connection", (socket) => {
       (socket) => socket.userName === offerObj.offererUserName
     );
     if (!socketToAnswer) {
+      console.log("No matching socket");
       return;
     }
     //we found the matching socket, so we can emit to it
     const socketIdToAnswer = socketToAnswer.socketId;
+
+    // we find the offer to update so we can emit it
+    const offerToUpdate = offers.find(
+      (o) => o.offererUserName === offerObj.offererUserName
+    );
+    if (!offerToUpdate) {
+      console.log("No matching offer");
+      return;
+    }
+    offerToUpdate.answer = offerObj.answer;
+    offerToUpdate.answererUserName = userName;
+
+    //emit the answer to the offerer
+    io.to(socketIdToAnswer).emit("answerResponse", offerToUpdate);
   });
 
   socket.on("sendIceCandidateToSignalingServer", (iceCandidateObject) => {

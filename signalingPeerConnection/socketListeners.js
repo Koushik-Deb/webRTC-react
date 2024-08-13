@@ -8,6 +8,10 @@ socket.on("newOfferAwaiting", (offers) => {
   createOfferEls(offers);
 });
 
+socket.on("answerResponse", (offerObj) => {
+  addAnswer(offerObj);
+});
+
 function createOfferEls(offers) {
   const answerEl = document.querySelector("#answer");
   offers.forEach((o) => {
