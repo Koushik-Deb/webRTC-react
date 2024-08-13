@@ -1,3 +1,5 @@
+// we can always log peerConnection.signalingState to see the state of the peer connection to debug code
+
 const userName = "Koushik-" + Math.floor(Math.random() * 1000);
 const password = "X";
 document.querySelector("#user-name").innerHTML = userName;
@@ -26,9 +28,13 @@ let peerConfiguration = {
 };
 
 const fetchUserMedia = async () => {
-  const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-  localVideoEl.srcObject = stream;
-  localStream = stream;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    localVideoEl.srcObject = stream;
+    localStream = stream;
+  } catch (err) {
+    console.error("Error in fetch User Media", err);
+  }
 };
 
 // when a client initiates a call, this function is called
@@ -84,6 +90,14 @@ const createPeerConnection = () => {
     // need to add local streams to the peer connection so that the remote peer can see us
     localStream.getTracks().forEach((track) => {
       peerConnection.addTrack(track, localStream);
+    });
+
+    peerConnection.addEventListener("signalingstatechange", (event) => {
+      console.log(
+        "Signaling state change ",
+        peerConnection.signalingState,
+        " event "
+      );
     });
 
     peerConnection.addEventListener("icecandidate", (e) =>
