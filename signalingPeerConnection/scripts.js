@@ -4,7 +4,7 @@ const userName = "Koushik-" + Math.floor(Math.random() * 1000);
 const password = "X";
 document.querySelector("#user-name").innerHTML = userName;
 
-const socket = io("https://localhost:8181", {
+const socket = io("https://192.168.0.179:8181", {
   auth: {
     userName,
     password,
